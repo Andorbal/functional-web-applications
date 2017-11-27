@@ -1,6 +1,8 @@
 defmodule IslandsEngine.Board do
   alias IslandsEngine.{Coordinate, Island}
 
+  def new(), do: %{}
+
   def position_island(board, key, %Island{} = island) do
     case overlaps_existing_island?(board, key, island) do
       true -> {:error, :overlapping_island}
@@ -35,7 +37,7 @@ defmodule IslandsEngine.Board do
     board = %{board | key => island}
     {:hit, forest_check(board, key), win_check(board), board}
   end
-  defp guess_response(:hiss, board), do:
+  defp guess_response(:miss, board), do:
     {:miss, :none, :no_win, board}
 
   defp forest_check(board, key) do
