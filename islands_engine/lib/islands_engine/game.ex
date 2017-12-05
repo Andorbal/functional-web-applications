@@ -31,6 +31,16 @@ defmodule IslandsEngine.Game do
   # Server
 
   def init(name) do
+    send(self(), {:set_state, name})
+    {:ok, fresh_state(name)}
+  end
+
+  def handle_info(:timeout, state_data) do
+    :ets.delete :game_state, state_data.player1.name
+    {:stop, {:shutdown, :timeout}, state_data}
+  end
+
+  def handle_info({:set_state, name}, _state) do
     state_data =
       case :ets.lookup(:game_state, name) do
         [] -> fresh_state(name)
@@ -38,11 +48,7 @@ defmodule IslandsEngine.Game do
       end
 
     :ets.insert(:game_state, {name, state_data})
-    {:ok, state_data, @timeout}
-  end
-
-  def handle_info(:timeout, state_data) do
-    {:stop, {:shutdown, :timeout}, state_data}
+    {:noreply, state_data, @timeout}
   end
 
   def handle_call({:add_player, name}, _from, state_data) do
