@@ -29,7 +29,26 @@ defmodule IslandsEngine.GameTest do
     end
   end
 
+  describe "state" do
+    setup [:start_game]
+
+    test "saves state on creation", %{game: game} do
+      Game.add_player game, "Trane"
+      assert [{_key, %{
+        player1: %{name: "Miles"},
+        player2: %{name: "Trane"}}
+      }] = :ets.lookup(:game_state, "Miles")
+    end
+
+    test "uses existing state" do
+      :ets.insert(:game_state, {"Foo", :state})
+      {:ok, game} = Game.start_link("Foo")
+      assert :state = :sys.get_state(game)
+    end
+  end
+
   defp start_game(_context) do
+    :ets.delete(:game_state, "Miles")
     {:ok, game} = Game.start_link("Miles")
     {:ok, game: game}
   end
