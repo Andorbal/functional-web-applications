@@ -7,7 +7,7 @@ defmodule IslandsEngine.GameTest do
     setup [:start_game]
 
     test "cannot guess in initialized state", %{game: game} do
-      assert :error = Game.guess_coordinate(game, :player1, 1, 1)
+      assert {:error, :unknown_error} = Game.guess_coordinate(game, :player1, 1, 1)
     end
   end
 
@@ -20,7 +20,7 @@ defmodule IslandsEngine.GameTest do
 
     test "returns error if player1 guesses again", %{game: game} do
       Game.guess_coordinate(game, :player1, 5, 5)
-      assert :error = Game.guess_coordinate(game, :player1, 3, 1)
+      assert {:error, :unknown_error} = Game.guess_coordinate(game, :player1, 3, 1)
     end
 
     test "returns win when guess is the last hit", %{game: game} do
