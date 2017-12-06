@@ -10,8 +10,10 @@ defmodule IslandsEngine.GameSupervisor do
   def start_game(name), do:
     Supervisor.start_child(__MODULE__, [name])
 
-  def stop_game(name), do:
+  def stop_game(name) do
+    :ets.delete :game_state, name
     Supervisor.terminate_child(__MODULE__, pid_from_name(name))
+  end
 
   # Server
   def init(:ok), do:

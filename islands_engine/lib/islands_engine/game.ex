@@ -95,8 +95,7 @@ defmodule IslandsEngine.Game do
     end
   end
 
-  def handle_call({:guess_coordinate, player_key, row, col}, _from, state_data)
-  do
+  def handle_call({:guess_coordinate, player_key, row, col}, _from, state_data) do
     opponent_key = opponent(player_key);
     opponent_board = player_board(state_data, opponent_key)
 
@@ -116,6 +115,12 @@ defmodule IslandsEngine.Game do
       {:error, error} -> reply_error(state_data, error)
     end
   end
+
+  def terminate({:shutdown, :timeout}, state_data) do
+    :ets.delete :game_state, state_data.player1.name
+    :ok
+  end
+  def terminate(_reason, _state), do: :ok
 
   defp update_player2_name(state_data, name) do
     put_in(state_data.player2.name, name)
