@@ -108,6 +108,18 @@ window.set_islands = function(channel, player) {
     });
 };
 
+window.guess_coordinate = function(channel, player, row, col) {
+  var params = {
+    player: player,
+    row: row,
+    col: col
+  };
+
+  channel.push("guess_coordinate", params).receive("error", response => {
+    console.log("Unable to guess a coordinate: " + player, response);
+  });
+};
+
 window.start = function(name) {
   var game_channel = new_channel("moon", name);
   window.join(game_channel);
@@ -120,6 +132,9 @@ window.start = function(name) {
   });
   game_channel.on("player_set_islands", response => {
     console.log("Player Set Islands", response);
+  });
+  game_channel.on("player_guessed_coordinate", response => {
+    console.log("Player Guessed Coordinate: ", response.result);
   });
 
   return game_channel;
