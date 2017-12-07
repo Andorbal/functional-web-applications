@@ -24,8 +24,8 @@ var phoenix = require("phoenix");
 window.socket = new phoenix.Socket("/socket", {});
 window.socket.connect();
 
-window.new_channel = function(subtopic, screen_name) {
-  return socket.channel("game:" + subtopic, { screen_name: screen_name });
+window.new_channel = function(player, screen_name) {
+  return socket.channel("game:" + player, { screen_name: screen_name });
 };
 
 window.join = function(channel) {
@@ -135,6 +135,9 @@ window.start = function(name) {
   });
   game_channel.on("player_guessed_coordinate", response => {
     console.log("Player Guessed Coordinate: ", response.result);
+  });
+  game_channel.on("subscribers", response => {
+    console.log("These players have joined: ", response);
   });
 
   return game_channel;
