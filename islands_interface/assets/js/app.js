@@ -61,12 +61,65 @@ window.say_hello = function(channel, greeting) {
     });
 };
 
+window.new_game = function(channel) {
+  channel
+    .push("new_game")
+    .receive("ok", response => console.log("New Gmae!", response))
+    .receive("error", response =>
+      console.log("Unable to start a new game.", response)
+    );
+};
+
+window.add_player = function(channel, player) {
+  channel
+    .push("add_player", player)
+    .receive("error", response =>
+      console.log("Unable to add new player: " + player, response)
+    );
+};
+
+window.position_island = function(channel, player, island, row, col) {
+  var params = {
+    player: player,
+    island: island,
+    row: row,
+    col: col
+  };
+
+  channel
+    .push("position_island", params)
+    .receive("ok", response => {
+      console.log("Island positioned!", response);
+    })
+    .receive("error", response => {
+      console.log("Unable to position island.", response);
+    });
+};
+
+window.set_islands = function(channel, player) {
+  channel
+    .push("set_islands", player)
+    .receive("ok", response => {
+      console.log("Here is the board");
+      console.dir(response.board);
+    })
+    .receive("error", response => {
+      console.log("Unable to set islands for: " + player, response);
+    });
+};
+
 window.start = function(name) {
   var game_channel = new_channel("moon", name);
   window.join(game_channel);
 
   game_channel.on("said_hello", response => {
     console.log("Returned Greeting:", response.message);
+  });
+  game_channel.on("player_added", response => {
+    console.log("Player Added", response);
+  });
+  game_channel.on("player_set_islands", response => {
+    console.log("Player Set Islands", response);
   });
 
   return game_channel;
